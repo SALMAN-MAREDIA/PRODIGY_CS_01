@@ -1,10 +1,14 @@
 # PRODIGY_CS_01 – Caesar Cipher
 
-🔐 A simple encryption/decryption tool using the Caesar Cipher algorithm.
+🔐 A simple Caesar Cipher encryption and decryption tool using Python.
 
 ## Features
-- Encrypt and decrypt text
-- User input for message and shift key
-- Python terminal app
+- User inputs a message and shift key
+- Encrypts and decrypts text
+- Easy-to-understand logic using loops
 
-## Domain: Cyber Security
+## Technologies Used
+- Python
+
+## Domain
+Cyber Security – Prodigy InfoTech Internship
