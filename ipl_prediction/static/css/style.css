@@ -1,0 +1,182 @@
+/* ===================================================================
+   IPL Score Predictor – Custom Stylesheet
+   =================================================================== */
+
+/* ---- CSS Variables ---- */
+:root {
+  --ipl-blue:   #0033a0;
+  --ipl-gold:   #f5a623;
+  --ipl-dark:   #0a0f2e;
+  --ipl-light:  #f4f6fb;
+  --card-radius: 14px;
+}
+
+/* ---- Base ---- */
+body {
+  background-color: var(--ipl-light);
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  color: #212529;
+}
+
+/* ---- Navbar ---- */
+.navbar {
+  background: linear-gradient(135deg, var(--ipl-dark) 0%, var(--ipl-blue) 100%);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, .35);
+  padding: .75rem 1rem;
+}
+
+.navbar-brand {
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: .5px;
+}
+
+/* ---- Hero Section ---- */
+.hero {
+  background: linear-gradient(135deg, var(--ipl-dark) 0%, #1a3a8a 60%, var(--ipl-blue) 100%);
+  padding: 4rem 1rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::before {
+  content: "🏏";
+  position: absolute;
+  font-size: 18rem;
+  opacity: .04;
+  right: -3rem;
+  top: -4rem;
+  pointer-events: none;
+}
+
+.hero h1 {
+  text-shadow: 0 2px 8px rgba(0, 0, 0, .4);
+}
+
+/* ---- Cards ---- */
+.card {
+  border-radius: var(--card-radius);
+}
+
+.card-header {
+  border-radius: var(--card-radius) var(--card-radius) 0 0 !important;
+  font-weight: 600;
+  letter-spacing: .3px;
+}
+
+/* ---- Form Controls ---- */
+.form-select,
+.form-control {
+  border-radius: 8px;
+  border: 1.5px solid #ced4da;
+  transition: border-color .2s, box-shadow .2s;
+}
+
+.form-select:focus,
+.form-control:focus {
+  border-color: var(--ipl-blue);
+  box-shadow: 0 0 0 .2rem rgba(0, 51, 160, .2);
+}
+
+/* ---- Predict Button ---- */
+.btn-primary {
+  background: linear-gradient(135deg, var(--ipl-blue) 0%, #1a5fb4 100%);
+  border: none;
+  border-radius: 10px;
+  font-weight: 600;
+  letter-spacing: .4px;
+  transition: opacity .2s, transform .15s;
+}
+
+.btn-primary:hover {
+  opacity: .92;
+  transform: translateY(-1px);
+}
+
+.btn-primary:disabled {
+  opacity: .65;
+  transform: none;
+}
+
+/* ---- Result Card ---- */
+#resultCard .display-3 {
+  font-size: 4.5rem;
+  color: var(--ipl-blue);
+}
+
+#scoreRange {
+  font-size: .95rem;
+}
+
+/* ---- Score range badge ---- */
+.score-badge {
+  display: inline-block;
+  padding: .35em .75em;
+  border-radius: 50px;
+  font-weight: 600;
+  font-size: .85rem;
+}
+
+/* ---- Stat Cards ---- */
+.stat-card {
+  border-radius: var(--card-radius);
+  transition: transform .2s, box-shadow .2s;
+}
+
+.stat-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, .12) !important;
+}
+
+.stat-icon {
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.stat-value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--ipl-blue);
+}
+
+.stat-label {
+  font-size: .8rem;
+}
+
+/* ---- Footer ---- */
+.footer {
+  background: linear-gradient(135deg, var(--ipl-dark) 0%, var(--ipl-blue) 100%);
+}
+
+/* ---- Loading spinner overlay on button ---- */
+.spinner-border-sm {
+  width: 1rem;
+  height: 1rem;
+}
+
+/* ---- Fade-in animation for result card ---- */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in-up {
+  animation: fadeInUp .4s ease forwards;
+}
+
+/* ---- Responsive tweaks ---- */
+@media (max-width: 576px) {
+  .hero h1 {
+    font-size: 1.8rem;
+  }
+
+  #resultCard .display-3 {
+    font-size: 3rem;
+  }
+}

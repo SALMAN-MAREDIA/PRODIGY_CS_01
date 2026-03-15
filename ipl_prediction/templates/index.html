@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>IPL Score Predictor</title>
+
+  <!-- Bootstrap 5 -->
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    crossorigin="anonymous"
+  />
+  <!-- Bootstrap Icons -->
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    crossorigin="anonymous"
+  />
+  <!-- Custom styles -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+</head>
+<body>
+
+<!-- =====================  NAVBAR  ===================== -->
+<nav class="navbar navbar-expand-lg navbar-dark">
+  <div class="container">
+    <a class="navbar-brand d-flex align-items-center gap-2" href="/">
+      <img src="{{ url_for('static', filename='img/cricket-ball.svg') }}"
+           alt="cricket ball" width="30" height="30"
+           onerror="this.style.display='none'" />
+      <span>IPL Score Predictor</span>
+    </a>
+    <span class="badge bg-warning text-dark ms-auto fw-semibold">
+      Powered by Machine Learning
+    </span>
+  </div>
+</nav>
+
+<!-- =====================  HERO  ===================== -->
+<section class="hero text-white text-center py-5">
+  <div class="container">
+    <h1 class="display-4 fw-bold">🏏 Predict the IPL Score</h1>
+    <p class="lead mt-2 mb-0">
+      Enter the current match state and let our Random Forest model predict
+      the final innings score.
+    </p>
+  </div>
+</section>
+
+<!-- =====================  MAIN CONTENT  ===================== -->
+<main class="container my-5">
+  <div class="row g-4 justify-content-center">
+
+    <!-- ---- INPUT CARD ---- -->
+    <div class="col-lg-7">
+      <div class="card shadow-sm border-0">
+        <div class="card-header bg-primary text-white">
+          <i class="bi bi-pencil-square me-2"></i>Match Details
+        </div>
+        <div class="card-body p-4">
+
+          <form id="predictionForm" novalidate>
+
+            <!-- Teams row -->
+            <div class="row g-3 mb-3">
+              <div class="col-md-6">
+                <label for="batting_team" class="form-label fw-semibold">
+                  🏏 Batting Team
+                </label>
+                <select class="form-select" id="batting_team" name="batting_team" required>
+                  <option value="">Select team…</option>
+                  {% for team in teams %}
+                  <option value="{{ team }}">{{ team }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label for="bowling_team" class="form-label fw-semibold">
+                  🎯 Bowling Team
+                </label>
+                <select class="form-select" id="bowling_team" name="bowling_team" required>
+                  <option value="">Select team…</option>
+                  {% for team in teams %}
+                  <option value="{{ team }}">{{ team }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
+
+            <!-- City -->
+            <div class="mb-3">
+              <label for="city" class="form-label fw-semibold">
+                🏟️ Venue City
+              </label>
+              <select class="form-select" id="city" name="city" required>
+                <option value="">Select city…</option>
+                {% for city in cities %}
+                <option value="{{ city }}">{{ city }}</option>
+                {% endfor %}
+              </select>
+            </div>
+
+            <!-- Over + Score + Wickets row -->
+            <div class="row g-3 mb-3">
+              <div class="col-md-4">
+                <label for="overs" class="form-label fw-semibold">
+                  ⏱️ Overs Completed
+                </label>
+                <input
+                  type="number" class="form-control"
+                  id="overs" name="overs"
+                  min="1" max="20" step="0.1"
+                  placeholder="e.g. 10"
+                  required
+                />
+                <div class="form-text">1 – 20</div>
+              </div>
+              <div class="col-md-4">
+                <label for="runs" class="form-label fw-semibold">
+                  🏆 Current Score
+                </label>
+                <input
+                  type="number" class="form-control"
+                  id="runs" name="runs"
+                  min="0" max="400"
+                  placeholder="e.g. 85"
+                  required
+                />
+                <div class="form-text">0 – 400</div>
+              </div>
+              <div class="col-md-4">
+                <label for="wickets" class="form-label fw-semibold">
+                  ❌ Wickets Fallen
+                </label>
+                <input
+                  type="number" class="form-control"
+                  id="wickets" name="wickets"
+                  min="0" max="10"
+                  placeholder="e.g. 3"
+                  required
+                />
+                <div class="form-text">0 – 10</div>
+              </div>
+            </div>
+
+            <!-- Last-5-overs row -->
+            <div class="row g-3 mb-4">
+              <div class="col-md-6">
+                <label for="runs_last_5" class="form-label fw-semibold">
+                  📈 Runs in Last 5 Overs
+                </label>
+                <input
+                  type="number" class="form-control"
+                  id="runs_last_5" name="runs_last_5"
+                  min="0" max="150"
+                  placeholder="e.g. 42"
+                  required
+                />
+                <div class="form-text">0 – 150</div>
+              </div>
+              <div class="col-md-6">
+                <label for="wickets_last_5" class="form-label fw-semibold">
+                  ❌ Wickets in Last 5 Overs
+                </label>
+                <input
+                  type="number" class="form-control"
+                  id="wickets_last_5" name="wickets_last_5"
+                  min="0" max="10"
+                  placeholder="e.g. 1"
+                  required
+                />
+                <div class="form-text">0 – 10</div>
+              </div>
+            </div>
+
+            <!-- Error alert -->
+            <div id="errorAlert" class="alert alert-danger d-none" role="alert"></div>
+
+            <!-- Submit -->
+            <div class="d-grid">
+              <button type="submit" class="btn btn-primary btn-lg" id="predictBtn">
+                <i class="bi bi-lightning-charge-fill me-2"></i>Predict Score
+              </button>
+            </div>
+
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- ---- RESULT CARD ---- -->
+    <div class="col-lg-5">
+
+      <!-- Prediction result -->
+      <div id="resultCard" class="card shadow-sm border-0 d-none mb-4">
+        <div class="card-header bg-success text-white">
+          <i class="bi bi-graph-up-arrow me-2"></i>Predicted Final Score
+        </div>
+        <div class="card-body text-center py-4">
+          <p class="text-muted mb-1">Estimated total runs</p>
+          <h1 class="display-3 fw-bold text-primary" id="predictedScore">—</h1>
+          <p class="text-secondary mt-2" id="scoreRange"></p>
+          <hr />
+          <div class="row text-center mt-3" id="matchSummary"></div>
+        </div>
+      </div>
+
+      <!-- How it works card -->
+      <div class="card border-0 shadow-sm bg-light">
+        <div class="card-body p-4">
+          <h5 class="fw-bold mb-3">
+            <i class="bi bi-info-circle-fill text-primary me-2"></i>How It Works
+          </h5>
+          <ul class="list-unstyled mb-0 small text-secondary">
+            <li class="mb-2">
+              <i class="bi bi-check-circle-fill text-success me-2"></i>
+              Trained on <strong>synthetic-realistic IPL innings data</strong>
+              (3,000 matches × 3 snapshots).
+            </li>
+            <li class="mb-2">
+              <i class="bi bi-check-circle-fill text-success me-2"></i>
+              Uses a <strong>Random Forest Regressor</strong> with one-hot
+              encoding of teams and city.
+            </li>
+            <li class="mb-2">
+              <i class="bi bi-check-circle-fill text-success me-2"></i>
+              Considers batting &amp; bowling team strengths, venue, current
+              run-rate, and recent form.
+            </li>
+            <li>
+              <i class="bi bi-check-circle-fill text-success me-2"></i>
+              Provides a <strong>confidence band</strong> (±8% of prediction).
+            </li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ---- STATS SECTION ---- -->
+  <div class="row g-4 mt-3">
+    <div class="col-12">
+      <h4 class="fw-bold mb-3">
+        <i class="bi bi-bar-chart-fill text-primary me-2"></i>IPL Quick Stats
+      </h4>
+    </div>
+    <div class="col-sm-6 col-md-3">
+      <div class="stat-card card border-0 shadow-sm text-center p-3">
+        <div class="stat-icon mb-2">🏆</div>
+        <div class="stat-value">187</div>
+        <div class="stat-label text-muted">Avg. Winning Score (1st innings)</div>
+      </div>
+    </div>
+    <div class="col-sm-6 col-md-3">
+      <div class="stat-card card border-0 shadow-sm text-center p-3">
+        <div class="stat-icon mb-2">🏏</div>
+        <div class="stat-value">263</div>
+        <div class="stat-label text-muted">Highest IPL Score (RCB)</div>
+      </div>
+    </div>
+    <div class="col-sm-6 col-md-3">
+      <div class="stat-card card border-0 shadow-sm text-center p-3">
+        <div class="stat-icon mb-2">⚡</div>
+        <div class="stat-value">14.5</div>
+        <div class="stat-label text-muted">Average IPL Run Rate</div>
+      </div>
+    </div>
+    <div class="col-sm-6 col-md-3">
+      <div class="stat-card card border-0 shadow-sm text-center p-3">
+        <div class="stat-icon mb-2">🎯</div>
+        <div class="stat-value">10</div>
+        <div class="stat-label text-muted">IPL Teams (2024)</div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<!-- =====================  FOOTER  ===================== -->
+<footer class="footer text-white text-center py-4 mt-5">
+  <div class="container">
+    <p class="mb-1">
+      🏏 <strong>IPL Score Predictor</strong> &mdash; PRODIGY_CS_01
+    </p>
+    <p class="mb-0 small opacity-75">
+      Built with Flask · scikit-learn · Bootstrap 5
+    </p>
+  </div>
+</footer>
+
+<!-- Bootstrap JS -->
+<script
+  src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+  crossorigin="anonymous"
+></script>
+<!-- App JS -->
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
